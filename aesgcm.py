@@ -13,7 +13,6 @@ def encrypt(cipher, plaintext, nonce):
     cipher.mode = modes.GCM(nonce)
     encryptor = cipher.encryptor()
     ciphertext = encryptor.update(plaintext)
-    print(ciphertext)
     return (cipher, ciphertext, nonce)
 
 def decrypt(cipher, ciphertext, nonce):

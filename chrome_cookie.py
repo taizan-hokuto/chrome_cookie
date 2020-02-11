@@ -70,7 +70,7 @@ def get_key_from_local_state():
     return jsn["os_crypt"]["encrypted_key"]
 
 def aes_decrypt(encrypted_txt):
-    encoded_key = (get_key_from_local_state())
+    encoded_key = get_key_from_local_state()
     encrypted_key = base64.b64decode(encoded_key.encode())
     #remove prefix 'DPAPI'
     encrypted_key = encrypted_key[5:]
