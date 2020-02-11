@@ -3,6 +3,7 @@ Python script for retrieving cookies from Chrome browser.
 
 Compatible with Windows Google Chrome 80 later (AES GCM encrypted cookie data)
 
+This code is for verification, test use.
 
 ## Contributes:
 
