@@ -13,7 +13,6 @@ To filter by host-name, add below sentence to SQL.
 
 WHERE
     host_key LIKE '%foo-bar-buz.com%'
-
 '''
 
 sql = """
@@ -70,29 +69,31 @@ def get_key_from_local_state():
         jsn = json.loads(str(f.readline()))
     return jsn["os_crypt"]["encrypted_key"]
 
-def aes_decrypt(encrypted):
+def aes_decrypt(encrypted_txt):
     encoded_key = (get_key_from_local_state())
     encrypted_key = base64.b64decode(encoded_key.encode())
     #remove prefix 'DPAPI'
     encrypted_key = encrypted_key[5:]
     key = dpapi_decrypt(encrypted_key)
     #get nonce. ignore prefix 'v10', length is 12 bytes.
-    nonce = encrypted[3:15]
+    nonce = encrypted_txt[3:15]
     cipher = aesgcm.get_cipher(key)
-    return aesgcm.decrypt(cipher,encrypted[15:],nonce)
+    return aesgcm.decrypt(cipher,encrypted_txt[15:],nonce)
 
-def chrome_decrypt(encrypted):
+def chrome_decrypt(encrypted_txt):
     if sys.platform == 'win32':
         try:
-            if encrypted[:4] == b'\x01\x00\x00\x00':
-                return dpapi_decrypt(encrypted).decode()
-            elif encrypted[:3] == b'v10':
-                return aes_decrypt(encrypted)[:-16].decode()
+            if encrypted_txt[:4] == b'\x01\x00\x00\x00':
+                decrypted_txt = dpapi_decrypt(encrypted_txt)
+                return decrypted_txt.decode()
+            elif encrypted_txt[:3] == b'v10':
+                decrypted_txt = aes_decrypt(encrypted_txt)
+                return decrypted_txt[:-16].decode()
         except WindowsError:
             return None
     else:
         try:
-            return unix_decrypt(encrypted)
+            return unix_decrypt(encrypted_txt)
         except NotImplementedError:
             return None
 
