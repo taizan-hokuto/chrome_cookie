@@ -22,6 +22,8 @@ SELECT
     encrypted_value as value
 FROM
     cookies
+WHERE
+    host_key LIKE '%youtube.com%'
 """
 
 def dpapi_decrypt(encrypted):
@@ -100,7 +102,7 @@ def chrome_decrypt(encrypted_txt):
 
 def to_epoch(chrome_ts):
     if chrome_ts:
-        return chrome_ts - 11644473600 * 000 * 1000
+        return chrome_ts - 11644473600 * 1000 * 1000
     else:
         return None
 
@@ -110,7 +112,7 @@ class ChromeCookieJar(cookiejar.FileCookieJar):
             if sys.platform == 'win32':
                 filename = os.path.join(
                     os.environ['USERPROFILE'],
-                    r'AppData\Local\Google\Chrome\User Data\default\Cookies')
+                    r'AppData\Local\Google\Chrome\User Data\Profile 1\Cookies')
                 '''
                 If you use another account or moved profile folder,
                 change above path.
